@@ -11,6 +11,8 @@
 | 3 | 2026-10-14 | Prompt instrui o modelo a subir ao TEMA PAI na dúvida entre irmãos | Implementa a alavanca da régua já no 1º estágio (além de reforçar no juiz). | `prompts/classificacao_v1.md` |
 | 4 | 2026-10-14 | Modelos: `claude-haiku-5-5` + `gpt-4.1-mini` (baratos) | Orçamento real US$5+US$5; o case diz que modelo caro não pesa. Projeção ~US$0,7 total. | `src/classificadores.py` |
 | 5 | 2026-10-14 | Comitê de **2 famílias** (Claude + GPT); Gemini fora por ora | Tier gratuito do Gemini = 20 req/dia (inviável p/ 359). Reativável com nova chave/billing: `--providers gemini`. | `src/classificadores.py:PROVIDERS` |
+| 6 | 2026-10-15 | `max_tokens` do Anthropic 1024→2048 | 25/359 truncavam o JSON (haiku-5-5 escreve raciocínio longo). | `src/classificadores.py:_call_anthropic` |
+| 7 | 2026-10-15 | **Gate `MIN_CONF_EXATO=0,85`** no acordo exato | A amostra-ouro mostrou que o erro mora no "acordo exato" (82,6%), não na alavanca (100%). Exigir 2 famílias + nenhuma hesitante leva a precisão a 95,2%. Calibrado em 30 publicadas (amostra pequena → intervalo honesto largo). Interino de 2 famílias. | `src/juiz.py` |
 
 ## Amostra-ouro (rotulagem manual para estimar precisão)
 - Seed usada: **42** (`src/amostra_ouro.py --n 50 --seed 42`)

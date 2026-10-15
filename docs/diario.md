@@ -92,4 +92,28 @@ linguagem (Node vs instalar Python) e quais chaves de API existem.
 **Conclusão:** MANTIDO comitê de 2 famílias baratas; Gemini A TESTAR só se houver
 billing. Custo real do run bem abaixo do orçamento de US$5+US$5.
 
+### [2026-10-15] Run completo (2 famílias) + calibração contra a amostra-ouro
+**O que fiz:** rodei o comitê nas 359 (Claude haiku-5-5 + GPT 4.1-mini), juiz,
+estimativa. Medi contra as 50 da amostra-ouro.
+**Resultado (números):**
+- Sem gate: publicar 241 (67,1%), revisar 118; **precisão gold 26/30 = 86,7%** —
+  ABAIXO da régua de 95%.
+- **Diagnóstico do erro:** os 4 erros tinham confiança 0,99 (acordo exato das 2
+  famílias) → subir limiar global não ajuda. Separando por tipo de acordo:
+  **alavanca do tema-pai = 7/7 (100%)**; **acordo exato = 19/4 (82,6%)**. Todo o
+  erro está no acordo exato — famílias erram juntas e confiantes em questões
+  ambíguas.
+- **Correção:** gate `MIN_CONF_EXATO=0,85` — no acordo exato, só publica se ≥2
+  famílias E nenhuma com confiança auto-reportada < 0,85 (a alavanca fica livre).
+  Resultado: publicar 166 (46,2%), **precisão gold 20/21 = 95,2%** (Wilson
+  0,77–0,99). O único "erro" restante (Q0194) é ambiguidade de rótulo (Peculato
+  vs Comunicabilidade — ambos defensáveis).
+- **Custo real:** Anthropic US$0,17 + OpenAI ~US$1,28 + Gemini US$0 ≈ **US$1,45**
+  (OpenAI superestimado — não capturei o desconto de cache dele).
+**Conclusão:** MANTIDO o gate (respeita a régua). É resultado INTERINO de 2
+famílias: a cobertura caiu de 67% p/ 46% para garantir 95%. **A TESTAR:** com o
+Gemini como 3ª família, o acordo de 3 vias deve permitir relaxar o gate e
+recuperar cobertura mantendo a precisão. Cautela registrada: o limiar 0,85 foi
+calibrado em 30 publicadas (amostra pequena) — intervalo honesto reflete isso.
+
 <!-- PRÓXIMAS ENTRADAS ABAIXO -->

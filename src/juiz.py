@@ -33,6 +33,12 @@ ROOT = Path(__file__).resolve().parent.parent
 # --- parâmetros de decisão (DECISÕES MANUAIS — ver docs/decisoes_manuais.md) ---
 CONF_PUBLICAR = 0.80          # confiança combinada mínima para publicar
 CONF_PUBLICAR_LIXEIRA = 0.92  # exigência maior se o nó é lixeira suspeita
+# Gate do ACORDO EXATO: quando os modelos cravam o MESMO nó específico, o erro
+# (quando ocorre) é correlacionado e confiante. A amostra-ouro mostrou que exigir
+# (a) ≥2 famílias e (b) confiança mínima auto-reportada ≥ este valor separa os
+# erros (todos tinham um modelo hesitante). A alavanca do tema-pai NÃO precisa de
+# gate (foi 100% na amostra). Calibrado em 30 publicadas — ver docs.
+MIN_CONF_EXATO = 0.85
 
 # Temas introdutórios / de volume suspeito (diagnostico B3): publicar só com
 # acordo forte. (Os nós vazios 67xx/"Parte" já nem são selecionáveis.)
@@ -126,6 +132,12 @@ def decidir(arvore: ArvoreTemas, votos: list[dict]) -> Decisao:
     # --- caso 1: todos no MESMO nó exato ---
     if len(set(tids)) == 1:
         tid = tids[0]
+        min_conf = min(v["conf"] for v in dentro)
+        # gate: acordo exato só publica com ≥2 famílias E ninguém hesitante
+        if len(dentro) < 2 or min_conf < MIN_CONF_EXATO:
+            return Decisao("revisar", tid, extras, min(0.7, conf_media),
+                           "acordo exato, mas só 1 família ou confiança de algum "
+                           "modelo abaixo do limiar — revisar")
         conf = min(0.99, 0.6 + 0.13 * len(dentro) + 0.2 * conf_media) - penal_fora
         return _finalizar(arvore, tid, extras, conf, dentro, foras, n,
                           f"{len(dentro)}/{n} modelos no mesmo nó")

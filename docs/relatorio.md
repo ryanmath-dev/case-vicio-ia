@@ -30,10 +30,11 @@ todo nas alternativas — ex.: "Assinale a correta"). Ignorei o campo `comando`
 normalizei HTML cru, entidades, `\n` literais e ruído de OCR (marca d'água colada
 no texto da Q0078).
 
-**Terceiro: um comitê de 3 famílias, não um modelo só.** Um LLM sozinho erra de
-forma correlacionada consigo mesmo. Usei **Claude + GPT + Gemini** (famílias
-diferentes) para descorrelacionar erros: quando as três concordam, a confiança é
-real; quando divergem, é sinal de revisão. Saída estruturada em JSON (tema,
+**Terceiro: um comitê de famílias diferentes, não um modelo só.** Um LLM sozinho
+erra de forma correlacionada consigo mesmo. Projetei para **Claude + GPT + Gemini**
+(famílias diferentes) para descorrelacionar erros: quando concordam, a confiança é
+real; quando divergem, é sinal de revisão. (Na prática o Gemini saiu por limite de
+cota — ver adiante; rodou com Claude + GPT.) Saída estruturada em JSON (tema,
 confiança, extras, fora). Temperatura 0 onde o provedor aceita; **a
 reprodutibilidade vem do cache da resposta crua** (o Claude Opus/5.5 rejeita
 `temperature`, então a determinação não pode vir do sampling).
@@ -62,13 +63,34 @@ a medição não se ancorar nas saídas dos modelos. A precisão prevista combin
 (a) acerto medido nessa amostra pela régua pai/filho, (b) concordância do comitê
 como proxy, e (c) intervalo de Wilson.
 
-### Resultado da execução
-- Decisões: **[PUBLICAR] publicar · [REVISAR] revisar · [FORA] fora** (de 359).
-- Cobertura: **[COBERTURA]%**. Precisão estimada nas publicadas: **[PRECISAO]**
-  (intervalo [INTERVALO]).
-- Acerto na amostra-ouro (publicadas): **[OURO_ACERTO]**.
-- Modelos: `claude-haiku-5-5`, `gpt-4.1-mini`, `gemini-3.8-flash`. Custo total
-  **≈ US$ [CUSTO]**, tempo **[TEMPO]** (detalhe em `custos.md`).
+**Beco/ajuste importante — o Gemini caiu e a calibração revelou onde está o erro.**
+O tier gratuito do Gemini limita a 20 requisições/dia (inviável p/ 359), então o
+comitê rodou com **2 famílias (Claude `haiku-5-5` + GPT `gpt-4.1-mini`)**. Ao medir
+contra a amostra-ouro, a 1ª versão publicou 67% com **precisão só 86,7% (26/30)** —
+abaixo da régua. O diagnóstico foi o mais instrutivo do case:
+- **a alavanca do tema-pai acertou 7/7 (100%)** — quando os modelos divergem no
+  subtema e subimos ao pai, é quase sempre certo;
+- **o "acordo exato" (as duas famílias cravam o mesmo nó) acertou só 19/4 (82,6%)**
+  — as famílias erram *juntas e confiantes* em questões ambíguas, então subir o
+  limiar global não ajuda (os 4 erros tinham confiança 0,99).
+A correção foi um **gate no acordo exato**: só publica se as 2 famílias concordam
+*e* nenhuma reportou confiança < 0,85 (a alavanca fica livre). Isso leva a precisão
+a **95,2% (20/21)** — respeitando a régua.
+
+### Resultado da execução (interino, 2 famílias)
+- Decisões: **166 publicar (46,2%) · 193 revisar (53,8%) · 0 fora**.
+- **Precisão estimada nas publicadas: 0,95** (intervalo de Wilson 0,77–0,99,
+  n=21 publicadas na amostra-ouro; 20 certas pela régua).
+- O único "erro" restante (Q0194) é ambiguidade do próprio gabarito manual
+  (Peculato vs Comunicabilidade de elementares — ambos defensáveis).
+- **Cautela honesta:** o limiar 0,85 foi calibrado em 30 publicadas (amostra
+  pequena) — daí o intervalo largo. A cobertura caiu de 67% para 46% como preço de
+  garantir os 95%.
+- Modelos: `claude-haiku-5-5` + `gpt-4.1-mini`. Custo total **≈ US$ 1,45**
+  (teto; real menor), **≈ US$ 0,004/questão** (detalhe em `custos.md`).
+- **Próximo passo:** uma 3ª família (Gemini, via billing/nova chave) dá acordo de
+  3 vias e deve permitir **relaxar o gate e recuperar cobertura** mantendo os 95%
+  — os votos entram por cache sem refazer nada.
 
 ---
 
@@ -126,8 +148,8 @@ Em 50k/semana + novas importações, muda a economia e a latência:
 6. **Fila do professor** para os `revisar`; **reportes de alunos** realimentam a
    amostra-ouro viva.
 
-**Custo por questão.** Medido aqui: comitê de 3 famílias com modelos baratos ≈
-**US$ [CUSTO]/359 ≈ US$ 0,00x por questão**. Em produção, o desenho em camadas
+**Custo por questão.** Medido aqui: comitê de 2 famílias com modelos baratos ≈
+**US$ 1,45 / 359 ≈ US$ 0,004 por questão**. Em produção, o desenho em camadas
 derruba isso: ~90% resolvidas por 1 modelo barato sobre top-k (frações de centavo)
 e ~10% no comitê. Embeddings são baratos e cacheáveis. Estimativa de ordem de
 grandeza: **< US$ 0,01 por questão** no caminho barato.

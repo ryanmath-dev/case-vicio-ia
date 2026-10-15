@@ -135,7 +135,7 @@ def _call_anthropic(system: str, bloco_arvore: str, bloco_questao: str, model: s
     client = anthropic.Anthropic()
     resp = client.messages.create(
         model=model,
-        max_tokens=1024,
+        max_tokens=2048,  # haiku-5-5 às vezes escreve raciocínio longo; 1024 truncava o JSON
         system=[
             {"type": "text", "text": system},
             {"type": "text", "text": bloco_arvore, "cache_control": {"type": "ephemeral"}},
