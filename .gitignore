@@ -1,0 +1,16 @@
+# Segredos
+.env
+*.key
+
+# Cache de chamadas a modelos (grande; reproduzível)
+saidas/cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db
