@@ -42,11 +42,16 @@ CACHE_DIR = ROOT / "saidas" / "cache"
 load_dotenv(ROOT / ".env")
 
 # --- IDs de modelo (override por env) -------------------------------------
-ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-8")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.1")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+# Defaults = modelos VALIDADOS e usados no run (descobertos via --list-models;
+# os palpites iniciais gpt-5.1/gemini-2.5-pro não existiam na conta).
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-haiku-5-5")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
-PROVIDERS = ("anthropic", "openai", "gemini")
+# Comitê efetivo: 2 famílias (Claude + GPT). O Gemini foi DESCARTADO porque o
+# tier gratuito do AI Studio limita a 20 requisições/dia (insuficiente p/ 359).
+# Para reativá-lo como 3ª família, habilite billing no Google e inclua "gemini".
+PROVIDERS = ("anthropic", "openai")
 
 # --- schema de saída (compartilhado entre provedores) ---------------------
 JSON_SCHEMA = {

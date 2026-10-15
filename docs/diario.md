@@ -69,4 +69,27 @@ Sem `.env`/chaves de API no ambiente (só `.env.example` com ANTHROPIC/OPENAI/GO
 **Conclusão:** diagnóstico herdado CONFIRMADO. Dois pontos a decidir com o usuário:
 linguagem (Node vs instalar Python) e quais chaves de API existem.
 
+### [2026-10-14] Execução do comitê — descoberta dos IDs e queda do Gemini
+**O que fiz:** rodei `--list-models` + smokes antes do run completo.
+**Resultados (com números):**
+- Os palpites de ID estavam errados: `gpt-5.1` não existe na conta (há `gpt-5`,
+  `gpt-5-mini`, `gpt-4.1-mini`...); `gemini-2.5-flash` foi descontinuado p/ novos
+  usuários (API recomenda `gemini-3.8-flash`). Lição: nunca cravar ID de modelo
+  "de memória" — `--list-models` confirma contra a conta real.
+- Chave Anthropic: a 1ª (`sk-ant-usr-`) deu 400 "not scoped to a workspace"; a 2ª
+  chave `usr` funcionou (workspace-scoped) e revelou a família Claude 5.5
+  (`claude-haiku-5-5` etc.). Escolhi `claude-haiku-5-5` (barato: ~$0,10/$0,50/1M).
+- Modelos finais validados (todos acertaram Q0001 → 5524 com a alavanca do
+  tema-pai): `claude-haiku-5-5`, `gpt-4.1-mini`, `gemini-3.8-flash`.
+- **BECO/DESCARTADO — Gemini:** o tier gratuito do AI Studio limita o
+  `gemini-3.8-flash` a **20 requisições/dia** (erro 429 RESOURCE_EXHAUSTED após
+  ~13 chamadas boas, "retry em ~21h"). Inviável para 359/dia sem billing.
+  → **Comitê reduzido a 2 famílias (Claude + GPT)**, que já descorrelacionam erro.
+  O cache dos 13 votos do Gemini fica no disco, mas o juiz usa só as 2 famílias
+  (consistência). Reativável com billing no Google.
+- Correções de código pós-smoke: schema sem `additionalProperties` p/ Gemini;
+  retry com backoff em transitórios; **cache só de sucesso** (falha deve re-tentar).
+**Conclusão:** MANTIDO comitê de 2 famílias baratas; Gemini A TESTAR só se houver
+billing. Custo real do run bem abaixo do orçamento de US$5+US$5.
+
 <!-- PRÓXIMAS ENTRADAS ABAIXO -->
