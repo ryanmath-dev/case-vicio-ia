@@ -116,4 +116,27 @@ Gemini como 3ª família, o acordo de 3 vias deve permitir relaxar o gate e
 recuperar cobertura mantendo a precisão. Cautela registrada: o limiar 0,85 foi
 calibrado em 30 publicadas (amostra pequena) — intervalo honesto reflete isso.
 
+### [2026-10-15] 3ª família (Gemini via Vertex) — experimento e resultado NEGATIVO
+**Hipótese:** com acordo de 3 vias, as ambiguidades onde 2 famílias erravam juntas
+seriam quebradas pelo 3º voto → dava para relaxar o gate e recuperar cobertura
+mantendo 95%.
+**O que fiz:** o tier gratuito do Gemini (20/dia) não serve; o usuário forneceu um
+service account do **Vertex AI**. Adaptei `_call_gemini` p/ Vertex (ADC), rodei
+`gemini-2.5-flash` nas 359 (2 interrupções + 21 falhas 429 de cota, reprocessadas;
+358/359 no fim). Re-calibrei com 3 famílias.
+**Resultado (com números):**
+- Sem gate: cobertura 88% mas **precisão 0,854** (35/41) — o 3º voto adiciona
+  cobertura à custa de precisão.
+- Acordo exato de 3 vias: 16/19 = 0,84 (NÃO mais confiável que 2 vias). Alavanca
+  caiu de 100% (2-fam) p/ 0,86 (3-fam) porque mais questões difíceis entram nela.
+- Pontos que atingem 95%: 2-fam-gate **46,5%** > 3-fam-unanimidade 43,5% >
+  3-fam-gate-global 41,8%. O erro remanescente em todos é o Q0194 (ambiguidade
+  de rótulo: Peculato vs Comunicabilidade).
+**Conclusão:** **DESCARTADO** usar a 3ª família na submissão — ela não melhora a
+fronteira da régua (o ganho de cobertura vem com queda de precisão). Causa: os
+erros são dominados por ambiguidade de rótulo e questões difíceis correlacionadas,
+que um 3º LLM não resolve. Lição valiosa: "mais modelos" ≠ "melhor" quando os erros
+não são independentes. Submissão fica com **2 famílias + gate (46,5%, 95%)**. Os
+votos do Gemini ficam em cache (reprodutível) e a troca p/ 3 famílias é 1 linha.
+
 <!-- PRÓXIMAS ENTRADAS ABAIXO -->

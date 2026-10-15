@@ -48,9 +48,11 @@ ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-haiku-5-5")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
-# Comitê efetivo: 2 famílias (Claude + GPT). O Gemini foi DESCARTADO porque o
-# tier gratuito do AI Studio limita a 20 requisições/dia (insuficiente p/ 359).
-# Para reativá-lo como 3ª família, habilite billing no Google e inclua "gemini".
+# SUBMISSÃO: comitê de 2 famílias (Claude + GPT). O Gemini (via Vertex AI) foi
+# rodado nas 359 como experimento, mas a 3ª família NÃO melhorou a fronteira da
+# régua (adiciona cobertura à custa de precisão — ver docs/experimentos.md).
+# Os votos do Gemini ficam em cache; para usar as 3 famílias troque para:
+#   PROVIDERS = ("anthropic", "openai", "gemini")
 PROVIDERS = ("anthropic", "openai")
 
 # --- schema de saída (compartilhado entre provedores) ---------------------
@@ -187,11 +189,25 @@ def _schema_sem_addprops(schema: dict) -> dict:
     return schema
 
 
-def _call_gemini(system: str, bloco_arvore: str, bloco_questao: str, model: str) -> tuple[str, dict]:
+def _gemini_client():
+    """Cliente Gemini: AI Studio (API key) ou Vertex AI (service account/ADC).
+    GEMINI_BACKEND=vertex usa GOOGLE_CLOUD_PROJECT + GOOGLE_CLOUD_LOCATION e
+    credenciais via GOOGLE_APPLICATION_CREDENTIALS (ADC)."""
     from google import genai
+
+    if os.getenv("GEMINI_BACKEND", "api").lower() == "vertex":
+        return genai.Client(
+            vertexai=True,
+            project=os.environ["GOOGLE_CLOUD_PROJECT"],
+            location=os.getenv("GOOGLE_CLOUD_LOCATION", "global"),
+        )
+    return genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
+
+
+def _call_gemini(system: str, bloco_arvore: str, bloco_questao: str, model: str) -> tuple[str, dict]:
     from google.genai import types
 
-    client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
+    client = _gemini_client()
     resp = client.models.generate_content(
         model=model,
         contents=bloco_questao,

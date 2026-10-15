@@ -77,7 +77,7 @@ A correção foi um **gate no acordo exato**: só publica se as 2 famílias conc
 *e* nenhuma reportou confiança < 0,85 (a alavanca fica livre). Isso leva a precisão
 a **95,2% (20/21)** — respeitando a régua.
 
-### Resultado da execução (interino, 2 famílias)
+### Resultado da execução
 - Decisões: **166 publicar (46,2%) · 193 revisar (53,8%) · 0 fora**.
 - **Precisão estimada nas publicadas: 0,95** (intervalo de Wilson 0,77–0,99,
   n=21 publicadas na amostra-ouro; 20 certas pela régua).
@@ -88,9 +88,17 @@ a **95,2% (20/21)** — respeitando a régua.
   garantir os 95%.
 - Modelos: `claude-haiku-5-5` + `gpt-4.1-mini`. Custo total **≈ US$ 1,45**
   (teto; real menor), **≈ US$ 0,004/questão** (detalhe em `custos.md`).
-- **Próximo passo:** uma 3ª família (Gemini, via billing/nova chave) dá acordo de
-  3 vias e deve permitir **relaxar o gate e recuperar cobertura** mantendo os 95%
-  — os votos entram por cache sem refazer nada.
+
+**Beco testado — a 3ª família (Gemini) NÃO ajudou.** A hipótese era que um 3º voto
+(Gemini via Vertex AI, 359 questões) quebraria as ambiguidades onde as 2 famílias
+erravam juntas, permitindo relaxar o gate e recuperar cobertura. **O resultado foi
+o oposto:** com 3 famílias a cobertura sobe (até 88%) mas a precisão cai para ~85%;
+nos pontos que respeitam os 95%, a melhor cobertura é 2-fam 46,5% > 3-fam 43,5%. A
+3ª família adiciona cobertura à custa de precisão. **Causa:** os erros restantes são
+ambiguidade de rótulo e questões difíceis correlacionadas — não erros independentes
+que um 3º modelo descorrelacione. Lição: "mais modelos" não ajuda quando os erros
+não são independentes. A submissão fica com 2 famílias; os votos do Gemini estão em
+cache (trocar para 3 famílias é 1 linha).
 
 ---
 

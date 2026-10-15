@@ -50,3 +50,10 @@ de cache de prefixo (superestimado; real provavelmente ~$0,7–1,0).
   por isso o Anthropic saiu a só US$0,17 apesar de 359 chamadas.
 - Folga enorme no orçamento (US$5+US$5): dá p/ adicionar o Gemini (3ª família) e
   ainda re-rodar várias vezes.
+
+## Experimento da 3ª família (Gemini via Vertex AI)
+- Rodei `gemini-2.5-flash` nas 359 via Vertex (service account). ~3,2M tokens de
+  entrada → custo **GCP ~US$0,5–1** (fora do orçamento Anthropic/OpenAI), cobrado
+  no projeto do usuário. Tempo ~2h (Vertex 2.5-flash é lento + retries de cota 429).
+- **Não entrou na submissão** (não melhorou a fronteira da régua — ver experimentos
+  #4/#5). Os votos ficam em cache; reutilizáveis se a estratégia mudar.
