@@ -56,12 +56,32 @@ def _carregar_template(versao: str = VERSAO_PROMPT) -> tuple[str, str]:
 
 
 def montar(arvore_render: str, questao: Questao, versao: str = VERSAO_PROMPT) -> tuple[str, str]:
-    """Retorna (system, user) prontos para enviar ao modelo."""
+    """Retorna (system, user) prontos para enviar ao modelo (1 string de user)."""
     system, user = _carregar_template(versao)
     user = user.replace("{ARVORE}", arvore_render).replace(
         "{QUESTAO}", questao.texto_classificacao()
     )
     return system, user
+
+
+def partes(arvore_render: str, questao: Questao, versao: str = VERSAO_PROMPT) -> tuple[str, str, str]:
+    """Retorna (system, bloco_arvore, bloco_questao) separados.
+
+    Permite colocar a parte ESTÁVEL (system + árvore, idêntica nas 359 questões)
+    antes da parte VOLÁTIL (a questão) — essencial para prompt caching: o bloco
+    da árvore recebe cache_control e a questão fica por último.
+    """
+    system, _user = _carregar_template(versao)
+    bloco_arvore = (
+        "ÁRVORE DE TEMAS (use só estes IDs; o caminho mostra disciplina > tema > subtema):\n\n"
+        + arvore_render
+    )
+    bloco_questao = (
+        "QUESTÃO A CLASSIFICAR:\n\n"
+        + questao.texto_classificacao()
+        + "\n\nResponda só com o JSON."
+    )
+    return system, bloco_arvore, bloco_questao
 
 
 if __name__ == "__main__":
