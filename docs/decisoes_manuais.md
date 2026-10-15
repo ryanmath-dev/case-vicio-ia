@@ -11,8 +11,24 @@
 | 3 | 2026-10-14 | Prompt instrui o modelo a subir ao TEMA PAI na dúvida entre irmãos | Implementa a alavanca da régua já no 1º estágio (além de reforçar no juiz). | `prompts/classificacao_v1.md` |
 
 ## Amostra-ouro (rotulagem manual para estimar precisão)
-- Seed usada: ___
-- Tamanho: ___ questões
+- Seed usada: **42** (`src/amostra_ouro.py --n 50 --seed 42`)
+- Tamanho: **50 questões**
+- **Rotulada ANTES de o comitê rodar** (os modelos ainda não tinham sido chamados)
+  → medição imparcial, sem ancoragem nas saídas dos modelos.
 - Critério de rótulo: tema que a questão de fato aborda (não o assunto_origem).
-- Arquivo: `docs/amostra_ouro.csv`
-- Observações de rotulagem (casos difíceis, dúvidas):
+  Quando a questão é multitema sem dominante claro, rotulei no **tema pai**
+  (nível 1), espelhando a mesma alavanca que o juiz usa — é justo pela régua.
+- Distribuição: Penal 17, Processo Penal 16, Criminologia 9, Leg. Especial 7,
+  fora 1. Arquivo: `docs/amostra_ouro.csv`.
+- Casos difíceis / de baixa confiança no rótulo (candidatos naturais a `revisar`):
+  - **Q0014** → `fora`: trata de medidas socioeducativas/ECA (HC em vara da
+    infância); nenhum tema da árvore cobre (disciplina de origem "Unificada").
+  - **Q0126, Q0303, Q0333, Q0288, Q0347**: enunciados "grab-bag" (5 alternativas
+    de temas distintos). Ancorei no tema da **alternativa correta** (ex.: Q0126
+    extraterritorialidade → 5182; Q0333 positivismo → 4373) ou no assunto quando
+    não havia dominante (Q0288 → 5066 Concurso de Crimes). Baixa confiança — são
+    exatamente o tipo que o diagnóstico aponta como difícil.
+  - **Q0016, Q0151**: multi-subtema de prisões → rotulei no tema 5517 (Prisões
+    em Espécie), não num subtema específico.
+  - **Q0280**: crime contra a honra com forte carga processual (queixa, exceção
+    da verdade) → ancorei no material (5120), mas ProcPenal/Ação Penal defensável.
