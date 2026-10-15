@@ -173,6 +173,15 @@ def _call_openai(system: str, bloco_arvore: str, bloco_questao: str, model: str)
     return texto, usage
 
 
+def _schema_sem_addprops(schema: dict) -> dict:
+    """Gemini não aceita 'additionalProperties' no response_schema — remove recursivamente."""
+    if isinstance(schema, dict):
+        return {k: _schema_sem_addprops(v) for k, v in schema.items() if k != "additionalProperties"}
+    if isinstance(schema, list):
+        return [_schema_sem_addprops(x) for x in schema]
+    return schema
+
+
 def _call_gemini(system: str, bloco_arvore: str, bloco_questao: str, model: str) -> tuple[str, dict]:
     from google import genai
     from google.genai import types
@@ -185,7 +194,7 @@ def _call_gemini(system: str, bloco_arvore: str, bloco_questao: str, model: str)
             system_instruction=system + "\n\n" + bloco_arvore,
             temperature=0,
             response_mime_type="application/json",
-            response_schema=JSON_SCHEMA,
+            response_schema=_schema_sem_addprops(JSON_SCHEMA),
         ),
     )
     texto = resp.text or ""
@@ -229,21 +238,36 @@ def classificar(
     # (o 1º arg só alimenta o bloco da árvore, que já temos — passamos "")
     _, _, bloco_questao = partes("", questao, versao)
 
-    try:
-        texto, usage = call_fn(system, bloco_arvore, bloco_questao, model)
-        parsed = _parse_json(texto)
-        r = Resultado(
-            provider=provider, model=model, questao_id=questao.id, versao_prompt=versao,
-            parsed=parsed, raw=texto, ok=parsed is not None, usage=usage,
-            erro="" if parsed is not None else "JSON não parseável",
-        )
-    except Exception as e:  # noqa: BLE001
-        r = Resultado(
-            provider=provider, model=model, questao_id=questao.id, versao_prompt=versao,
-            parsed=None, raw="", ok=False, erro=f"{type(e).__name__}: {e}", usage=None,
-        )
-    _salvar_cache(path, r)
-    return r
+    ultimo_erro = ""
+    for tentativa in range(3):
+        try:
+            texto, usage = call_fn(system, bloco_arvore, bloco_questao, model)
+            parsed = _parse_json(texto)
+            r = Resultado(
+                provider=provider, model=model, questao_id=questao.id, versao_prompt=versao,
+                parsed=parsed, raw=texto, ok=parsed is not None, usage=usage,
+                erro="" if parsed is not None else "JSON não parseável",
+            )
+            if r.ok:
+                _salvar_cache(path, r)  # só cacheia SUCESSO (falha transitória deve re-tentar depois)
+            return r
+        except Exception as e:  # noqa: BLE001
+            ultimo_erro = f"{type(e).__name__}: {e}"
+            if _transitorio(e) and tentativa < 2:
+                time.sleep(2 * (tentativa + 1))
+                continue
+            break
+    # falha definitiva nesta rodada — NÃO cacheia (permite retry numa próxima execução)
+    return Resultado(
+        provider=provider, model=model, questao_id=questao.id, versao_prompt=versao,
+        parsed=None, raw="", ok=False, erro=ultimo_erro, usage=None,
+    )
+
+
+def _transitorio(e: Exception) -> bool:
+    s = f"{type(e).__name__} {e}".lower()
+    return any(t in s for t in ("503", "429", "500", "502", "529", "unavailable",
+                                "overloaded", "ratelimit", "rate_limit", "timeout"))
 
 
 # =============================================================================
