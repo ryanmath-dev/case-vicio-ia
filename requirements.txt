@@ -1,0 +1,14 @@
+# Pipeline de classificação — case Vício / Método VDE
+# Instalar em venv: .venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# SDKs dos modelos (comitê multi-família)
+anthropic>=0.40
+openai>=1.50
+google-genai>=0.3
+
+# Dados e utilidades
+pandas>=2.2
+python-dotenv>=1.0
+scipy>=1.13        # Wilson / estatística para intervalos
+numpy>=1.26
+tqdm>=4.66         # barra de progresso nas chamadas

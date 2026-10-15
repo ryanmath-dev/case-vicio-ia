@@ -47,4 +47,26 @@ custa < US$10). Economia vira argumento só na seção de produção (cheap-by-d
 **Conclusão:** MANTIDO usar modelos fortes aqui; registrar trade-off de custo
 para produção.
 
+### [2026-10-14] Verificação dos dados + ambiente da máquina
+**O que fiz:** reprocessei `questoes.jsonl` e `temas.csv` em script próprio (Node)
+para confirmar o diagnóstico herdado e checar o ambiente.
+**Resultado (números):**
+- Questões: 359. Nº de alternativas = {5:255, 4:46, 2:58}. As 58 de 2 alt. são
+  Certo/Errado (estilo Cespe). 18 sem `assunto_origem` (confirma A3).
+- `disciplina_origem`: 131 Processo Penal, 129 Direito Penal, 32 Leg. Especial,
+  31 Criminologia, **27 só "Penal"**, + 7 fora do recorte (2 Constitucional,
+  2 Civil-Leg.Esp., 1 Tributário, 1 Ambiental, 1 "Disciplina Unificada", 1 vazio,
+  1 "Direito Processual Penal" redundante).
+- Temas: 377 = 4 roots (4365 Criminologia, 4683 Leg.Especial, 5062 Penal,
+  5465 Processo Penal) + 111 nível-1 + 262 nível-2. Inativos: 5078, 5234.
+- **20 nós sem descrição** = os 67xx (confirma B1/B2: duplicados/módulos de curso).
+- Lixeiras por volume no `source` (campo descricao): roots Penal(4483)/ProcPenal(4112)/
+  Leg.Esp(817)/Criminologia(399); nível-1 Sist.e Princ.Proc.Penais(538),
+  Teoria da Pena(453), Introdução ao Estudo(424); nível-2 "Conceito e Fontes do
+  Direito Penal" 5171(310) e "Sistemas Processuais Penais" 5581(285) — confirma B3.
+**Ambiente:** Python NÃO instalado (só stub da Store); **Node.js v24** disponível.
+Sem `.env`/chaves de API no ambiente (só `.env.example` com ANTHROPIC/OPENAI/GOOGLE).
+**Conclusão:** diagnóstico herdado CONFIRMADO. Dois pontos a decidir com o usuário:
+linguagem (Node vs instalar Python) e quais chaves de API existem.
+
 <!-- PRÓXIMAS ENTRADAS ABAIXO -->

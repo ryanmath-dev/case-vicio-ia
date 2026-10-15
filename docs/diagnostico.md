@@ -20,8 +20,8 @@
 - Q0169 → "Direito Processual Penal" (rótulo redundante), Q0309 → "Direito Ambiental".
 
 ### A3. Questões sem `assunto_origem` (18) [CONFIRMADO]
-- Ex.: Q0016, Q0024, Q0035, Q0036, Q0070, Q0137, Q0170, Q0187, Q0203, Q0218,
-  Q0289, Q0293, Q0304, Q0318, Q0327, Q0345, Q0348. Q0036 também sem disciplina.
+- Q0016, Q0024, Q0035, Q0036, Q0070, Q0137, Q0170, Q0187, Q0203, Q0218,
+  Q0277, Q0289, Q0293, Q0304, Q0318, Q0327, Q0345, Q0348. Q0036 também sem disciplina.
 
 ### A4. Enunciados "vazios" — conteúdo todo nas alternativas [CONFIRMADO]
 - Ex.: Q0037, Q0090, Q0177, Q0192, Q0205, Q0239, Q0333, Q0339 ("Assinale a
@@ -42,10 +42,11 @@
 ### A8. Formatos mistos de questão [CONFIRMADO]
 - 255 com 5 alternativas, 46 com 4, 58 Certo/Errado (estilo Cespe).
 
-### A9. Duplicatas [CONFIRMADO]
-- Grupo 1: Q0037, Q0172, Q0331, Q0354. Grupo 2: Q0090, Q0205, Q0222, Q0268,
-  Q0282, Q0299, Q0321, Q0333, Q0339. (Verificar se é duplicata real ou colisão
-  de prefixo na deduplicação.)
+### A9. Duplicatas — NÃO há [CONFIRMADO, corrigido]
+- 1ª checagem (só os 300 primeiros caracteres do enunciado) acusou 2 grupos de
+  "duplicatas". Era falso positivo: enunciados genéricos iguais ("Assinale a
+  alternativa correta.") com alternativas diferentes. Comparando enunciado +
+  alternativas: **0 duplicatas reais**. (Lição registrada no diário.)
 
 ## B. Defeitos na ÁRVORE DE TEMAS
 
@@ -53,8 +54,16 @@
 - Aparecem em "Penal" (nós 67xx, SEM descrição) e também em "Legislação Especial":
   Lavagem (6723 vs 4702), Maria da Penha (6724 vs 4704), Tráfico de Drogas
   (6728 vs 4708), Organizações Criminosas (6725 vs 4705), Abuso de Autoridade
-  (6716 vs 4684), Meio Ambiente (6717 vs 4688). LEP em Proc. Penal (6734) e em
-  Leg. Especial (4703). → Precisa decidir o nó canônico.
+  (6716 vs 4684), Meio Ambiente (6717 vs 4688), Estatuto do Idoso (6722 vs 4696).
+  LEP em Proc. Penal (6734) e em Leg. Especial (4703). Ação Penal em Penal (5063)
+  e em Proc. Penal (5466). São 9 pares.
+- Os 20 nós 67xx são todos nível 1, **sem filhos e sem descrição** — parecem
+  criados depois, por importação de módulos de curso.
+- **RISCO PRINCIPAL:** os dois nós de cada par estão em ramos diferentes. Se
+  escolhermos o nó que a equipe NÃO usou, é erro, por mais que o assunto esteja
+  certo. Nenhum comitê de modelos detecta isso (é convenção, não conteúdo).
+  → Hipótese a testar: preferir o nó com descrição e histórico de questões
+  (47xx / 5466), e mandar para revisão quando houver dúvida real.
 
 ### B2. Nós "Parte 1/Parte 2" vazios e sem descrição [CONFIRMADO]
 - Ex.: 6718/6719 (Adm. Pública), 6720/6721 (Patrimônio), 6726/6727 (Teoria da
