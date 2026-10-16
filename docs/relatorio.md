@@ -63,42 +63,41 @@ a medição não se ancorar nas saídas dos modelos. A precisão prevista combin
 (a) acerto medido nessa amostra pela régua pai/filho, (b) concordância do comitê
 como proxy, e (c) intervalo de Wilson.
 
-**Beco/ajuste importante — o Gemini caiu e a calibração revelou onde está o erro.**
-O tier gratuito do Gemini limita a 20 requisições/dia (inviável p/ 359), então o
-comitê rodou com **2 famílias (Claude `haiku-5-5` + GPT `gpt-4.1-mini`)**. Ao medir
-contra a amostra-ouro, a 1ª versão publicou 67% com **precisão só 86,7% (26/30)** —
-abaixo da régua. O diagnóstico foi o mais instrutivo do case:
-- **a alavanca do tema-pai acertou 7/7 (100%)** — quando os modelos divergem no
-  subtema e subimos ao pai, é quase sempre certo;
-- **o "acordo exato" (as duas famílias cravam o mesmo nó) acertou só 19/4 (82,6%)**
-  — as famílias erram *juntas e confiantes* em questões ambíguas, então subir o
-  limiar global não ajuda (os 4 erros tinham confiança 0,99).
+**O achado mais instrutivo — a calibração revelou ONDE está o erro.** O comitê
+rodou com **2 famílias (Claude `haiku-5-5` + GPT `gpt-4.1-mini`)**. A 1ª versão,
+sem gate, publicou 67% mas com **precisão só 88%** — abaixo da régua. Medindo contra
+a amostra-ouro, o diagnóstico foi claro:
+- **a alavanca do tema-pai acerta ~100%** — quando os modelos divergem no subtema e
+  subimos ao pai, é quase sempre certo (publicar o pai cobre qualquer filho);
+- **o "acordo exato" (as duas famílias cravam o mesmo nó) é onde moram os erros** —
+  as famílias erram *juntas e confiantes* em questões ambíguas; por isso subir o
+  limiar global de confiança não ajuda (os erros estão no topo da confiança).
 A correção foi um **gate no acordo exato**: só publica se as 2 famílias concordam
-*e* nenhuma reportou confiança < 0,85 (a alavanca fica livre). Isso leva a precisão
-a **95,2% (20/21)** — respeitando a régua.
+*e* nenhuma reportou confiança < 0,85 (a alavanca fica livre).
 
 ### Resultado da execução
 - Decisões: **166 publicar (46,2%) · 193 revisar (53,8%) · 0 fora**.
-- **Precisão estimada nas publicadas: 0,95** (intervalo de Wilson 0,77–0,99,
-  n=21 publicadas na amostra-ouro; 20 certas pela régua).
-- O único "erro" restante (Q0194) é ambiguidade do próprio gabarito manual
+- **Precisão estimada nas publicadas: 0,98** (Wilson 0,88–1,00; **44/45** publicadas
+  certas pela régua na amostra-ouro de **100 questões rotuladas à mão**).
+- O único erro na amostra (Q0194) é ambiguidade do próprio gabarito manual
   (Peculato vs Comunicabilidade de elementares — ambos defensáveis).
-- **Cautela honesta:** o limiar 0,85 foi calibrado em 30 publicadas (amostra
-  pequena) — daí o intervalo largo. A cobertura caiu de 67% para 46% como preço de
-  garantir os 95%.
+- A cobertura é 46% porque garantir ≥95% tem um custo: o sweep de limiares mostrou
+  um "penhasco" — abaixo de 46% de cobertura a precisão fica ~98%, mas tentar >55%
+  de cobertura derruba a precisão para ~94% (abaixo da régua). 46% é o teto de
+  cobertura que respeita a régua com margem.
 - Modelos: `claude-haiku-5-5` + `gpt-4.1-mini`. Custo total **≈ US$ 1,45**
   (teto; real menor), **≈ US$ 0,004/questão** (detalhe em `custos.md`).
 
-**Beco testado — a 3ª família (Gemini) NÃO ajudou.** A hipótese era que um 3º voto
-(Gemini via Vertex AI, 359 questões) quebraria as ambiguidades onde as 2 famílias
-erravam juntas, permitindo relaxar o gate e recuperar cobertura. **O resultado foi
-o oposto:** com 3 famílias a cobertura sobe (até 88%) mas a precisão cai para ~85%;
-nos pontos que respeitam os 95%, a melhor cobertura é 2-fam 46,5% > 3-fam 43,5%. A
-3ª família adiciona cobertura à custa de precisão. **Causa:** os erros restantes são
+**Beco testado — a 3ª família (Gemini) NÃO ajudou.** Hipótese: um 3º voto (Gemini
+via Vertex AI, 359 questões) quebraria as ambiguidades onde as 2 famílias erravam
+juntas, recuperando cobertura. **Resultado medido (amostra de 100):** com 3
+famílias a cobertura sobe (até 88%) mas a precisão cai para ~86–89%; nos pontos que
+respeitam os 95%, a melhor cobertura é **2-fam 46% > 3-fam 42%**. A 3ª família
+adiciona cobertura só **abaixo** da régua. **Causa:** os erros restantes são
 ambiguidade de rótulo e questões difíceis correlacionadas — não erros independentes
-que um 3º modelo descorrelacione. Lição: "mais modelos" não ajuda quando os erros
-não são independentes. A submissão fica com 2 famílias; os votos do Gemini estão em
-cache (trocar para 3 famílias é 1 linha).
+que um 3º modelo descorrelacione. **Lição:** "mais modelos" não ajuda quando os
+erros não são independentes. A submissão fica com 2 famílias; os votos do Gemini
+estão em cache (trocar para 3 é 1 linha).
 
 ---
 

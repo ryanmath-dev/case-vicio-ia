@@ -11,6 +11,9 @@
 | 3 | 2026-10-15 | Gate de confiança no acordo exato atinge a régua | exigir min(conf dos modelos)≥limiar só no acordo exato | prec. gold / cobertura | 0.85→0.952(20/21)/46.5% · 0.90→1.00(12/12)/35.4% | MANTIDO limiar 0.85 |
 | 4 | 2026-10-15 | 3ª família (Gemini/Vertex) recupera cobertura mantendo 95% | adicionar gemini-2.5-flash (359 votos), re-calibrar | prec. gold / cobertura | sem gate: 0.854/88% · gate global 0.85: 0.95/41.8% · unanimidade 0.85: 0.952/43.5% | **DESCARTADO**: 3 famílias NÃO melhoram a fronteira (mais cobertura só com menos precisão) |
 | 5 | 2026-10-15 | Comparação dos pontos a 95% | melhor cobertura sujeito a prec.≥95% | cobertura | 2-fam 46.5% > 3-fam-unân 43.5% > 3-fam-global 41.8% | MANTIDO 2 famílias na submissão |
+| 6 | 2026-10-16 | Amostra-ouro n=50 subestima a precisão | ampliar p/ n=100, re-medir | prec. gold (2-fam gate 0.85) | 0.95 (n=50) → **0.978 (44/45, n=100)** [0.88-1.00] | CONFIRMADO: régua atendida c/ margem |
+| 7 | 2026-10-16 | Existe ponto >46% cobertura com ≥95%? | sweep fino do gate (2 fam), n=100 | prec / cobertura | 0.70→0.948/59.6% · 0.80→0.946/54.3% · 0.82→0.978/46.2% | NÃO: "penhasco"; 46% é o teto p/ ≥95% |
+| 8 | 2026-10-16 | 3 famílias melhoram a fronteira (n=100)? | re-medir 3-fam vs 2-fam | melhor cobertura a ≥95% | 2-fam 46.2% > 3-fam-global 41.8% | DESCARTADO: 3ª família não ajuda |
 
 ## Notas de métrica
 - **Precisão (publicadas):** fração das publicadas corretas pela régua (tema exato

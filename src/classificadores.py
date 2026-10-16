@@ -48,11 +48,10 @@ ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-haiku-5-5")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
-# SUBMISSÃO: comitê de 2 famílias (Claude + GPT). O Gemini (via Vertex AI) foi
-# rodado nas 359 como experimento, mas a 3ª família NÃO melhorou a fronteira da
-# régua (adiciona cobertura à custa de precisão — ver docs/experimentos.md).
-# Os votos do Gemini ficam em cache; para usar as 3 famílias troque para:
-#   PROVIDERS = ("anthropic", "openai", "gemini")
+# SUBMISSÃO: 2 famílias (Claude + GPT). O Gemini (Vertex AI) foi rodado nas 359 e
+# avaliado contra 100 questões-ouro: a 3ª família NÃO melhora a fronteira da régua
+# (só adiciona cobertura abaixo de 95% — ver docs/experimentos.md). Votos do Gemini
+# ficam em cache; para usar as 3 troque para ("anthropic","openai","gemini").
 PROVIDERS = ("anthropic", "openai")
 
 # --- schema de saída (compartilhado entre provedores) ---------------------

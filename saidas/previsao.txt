@@ -1,14 +1,14 @@
-precisao_prevista: 0.95
-precisao_intervalo: 0.77-0.99
+precisao_prevista: 0.98
+precisao_intervalo: 0.88-1.00
 cobertura_prevista: 0.46
 cobertura_intervalo: 0.41-0.51
 
 Como cheguei nestes números
 ----------------------------------------
 - Base de 359 questões; 166 publicadas (46.2%), 193 revisar, 0 fora.
-- Precisão estimada a partir de: amostra-ouro (20/21 publicadas certas pela régua).
+- Precisão estimada a partir de: amostra-ouro (44/45 publicadas certas pela régua).
 - Concordância média do comitê nas publicadas (proxy): 0.952 (fração de pares de modelos no mesmo ramo pai/filho).
-- Amostra-ouro: 21 das publicadas estavam na amostra rotulada à mão; 20 certas pela régua (pai/filho). Wilson 95%: 0.77-0.99.
+- Amostra-ouro: 45 das publicadas estavam na amostra rotulada à mão; 44 certas pela régua (pai/filho). Wilson 95%: 0.88-1.00.
 - Exemplos de erro na amostra: Q0194(pub 5089 vs ouro 5076).
 - Cobertura = publicadas/total = 166/359; intervalo de Wilson 95%: 0.41-0.51.
 - Honestidade do intervalo: a precisão real tende ao limite inferior quando a amostra-ouro é pequena; a régua pai/filho favorece acerto porque publicamos no tema-pai na dúvida entre irmãos.

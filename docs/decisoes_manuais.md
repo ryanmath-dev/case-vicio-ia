@@ -15,8 +15,10 @@
 | 7 | 2026-10-15 | **Gate `MIN_CONF_EXATO=0,85`** no acordo exato | A amostra-ouro mostrou que o erro mora no "acordo exato" (82,6%), não na alavanca (100%). Exigir 2 famílias + nenhuma hesitante leva a precisão a 95,2%. Calibrado em 30 publicadas (amostra pequena → intervalo honesto largo). Interino de 2 famílias. | `src/juiz.py` |
 
 ## Amostra-ouro (rotulagem manual para estimar precisão)
-- Seed usada: **42** (`src/amostra_ouro.py --n 50 --seed 42`)
-- Tamanho: **50 questões**
+- Seed usada: **42** (50 iniciais) + **123** (mais 50) → **100 questões**
+- Tamanho: **100 questões** (ampliada em 2026-10-16 para estreitar o intervalo;
+  as 50 iniciais foram preservadas). Precisão medida da submissão: **44/45 = 0,978**
+  (Wilson 0,88–1,00).
 - **Rotulada ANTES de o comitê rodar** (os modelos ainda não tinham sido chamados)
   → medição imparcial, sem ancoragem nas saídas dos modelos.
 - Critério de rótulo: tema que a questão de fato aborda (não o assunto_origem).

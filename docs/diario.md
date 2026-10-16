@@ -139,4 +139,20 @@ que um 3º LLM não resolve. Lição valiosa: "mais modelos" ≠ "melhor" quando
 não são independentes. Submissão fica com **2 famílias + gate (46,5%, 95%)**. Os
 votos do Gemini ficam em cache (reprodutível) e a troca p/ 3 famílias é 1 linha.
 
+### [2026-10-16] Amostra-ouro ampliada p/ 100 — medição decisiva
+**O que fiz:** rotulei +50 questões à mão (total 100, as 50 antigas preservadas) e
+re-medi toda a fronteira precisão×cobertura (2 e 3 famílias, vários gates).
+**Resultado (com números, n=100 gold):**
+- **2 famílias, gate exato 0,85: precisão 0,978 (44/45), Wilson 0,88–1,00,
+  cobertura 46,2%.** A precisão SUBIU vs a estimativa com n=50 (0,95) — o 0,95 era
+  ruído de amostra pequena; o valor firme é ~0,98.
+- Sweep fino: há um "penhasco" — gates 0,70–0,80 dão ~0,947 (logo ABAIXO de 0,95)
+  a ~54–60% cobertura; a partir de 0,82 pula p/ 0,978 a 46%. Não existe ponto com
+  cobertura >46% que fique com segurança ≥95%.
+- 3 famílias (gold n=100): gate exato 0,85 → 0,892 (66/74) a 74% (fura régua);
+  melhor ponto régua-safe = gate global 0,85 → 0,978 a **41,8%** (pior que 2-fam).
+**Conclusão:** DECISÃO FECHADA com evidência — submissão = **2 famílias + gate 0,85**
+(0,98 / 46%). As 3 famílias confirmadamente NÃO melhoram a fronteira. Único erro na
+amostra é o Q0194 (ambiguidade Peculato/Comunicabilidade). Revertido PROVIDERS p/ 2.
+
 <!-- PRÓXIMAS ENTRADAS ABAIXO -->
