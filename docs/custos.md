@@ -9,14 +9,14 @@
 
 ## Modelos escolhidos (restrição real: US$5 na OpenAI + US$5 na Anthropic)
 O case diz que "usar o modelo mais caro não pesa"; a régua + alavanca do tema-pai
-+ acordo de 3 famílias é que fazem o trabalho. Então escolhi modelos **baratos e
++ acordo entre famílias é que fazem o trabalho. Então escolhi modelos **baratos e
 capazes** por família, não os topos de linha:
 
-| Família | Modelo | Preço in/out (1M) | Por quê |
+| Família | Modelo (usado) | Preço in/out (1M) | Por quê |
 |---|---|---|---|
-| Anthropic | `claude-haiku-4-5` (planejado) | 1 / 5 | Opus 4.8 daria ~$3,3/359 (perto do limite). Haiku é seguro. Chave `usr` sem workspace — pendente. |
+| Anthropic | `claude-haiku-5-5` | 0,10 / 0,50 | Opus daria ~$3,3/359 (perto do limite); haiku-5-5 é baratíssimo e capaz. (A 1ª chave `usr` deu erro de workspace; a 2ª funcionou.) |
 | OpenAI | `gpt-4.1-mini` | 0,40 / 1,60 | API previsível (JSON schema+temp+seed); `gpt-5.1` nem existe na conta. |
-| Google | `gemini-3.8-flash` | tier AI Studio | `gemini-2.5-flash` descontinuado p/ novos usuários. |
+| Google (experimento) | `gemini-2.5-flash` via **Vertex AI** | GCP | AI Studio free limita a 20/dia → migrei p/ Vertex. Não entrou na submissão. |
 
 ## Medições (smoke, 1 questão)
 | Modelo | Tokens in | Tokens out |

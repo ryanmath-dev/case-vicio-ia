@@ -1,12 +1,19 @@
 """
-Seleciona a amostra-ouro para rotulagem manual (CLAUDE.md §9).
+Seleciona/expande a amostra-ouro para rotulagem manual (CLAUDE.md §9).
 
-Amostra aleatória com SEED FIXA (reprodutível) das 359 questões. Gera
-docs/amostra_ouro.csv com o texto de classificação de cada questão e a coluna
-`tema_ouro` em branco, para rotular à mão. NÃO sobrescreve rótulos já feitos.
+Amostra aleatória com SEED FIXA (reprodutível). É **aditiva e não-destrutiva**:
+- preserva TODAS as linhas e rótulos já existentes em docs/amostra_ouro.csv;
+- adiciona `--add` novas questões amostradas do complemento (com `--seed`),
+  até o arquivo ter no mínimo o total desejado.
+
+Foi assim que a amostra de 100 foi construída: 50 iniciais (seed 42) + 50
+adicionais (seed 123), sem nunca descartar rótulos.
 
 Uso:
-  .venv\\Scripts\\python.exe src\\amostra_ouro.py --n 50 --seed 42
+  # cria as 50 iniciais
+  .venv\\Scripts\\python.exe src\\amostra_ouro.py --add 50 --seed 42
+  # amplia com mais 50 (preserva as 50 já rotuladas)
+  .venv\\Scripts\\python.exe src\\amostra_ouro.py --add 50 --seed 123
 """
 from __future__ import annotations
 
@@ -25,31 +32,37 @@ SAIDA = ROOT / "docs" / "amostra_ouro.csv"
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n", type=int, default=50)
+    ap.add_argument("--add", type=int, default=50,
+                    help="quantas questões NOVAS amostrar do complemento")
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
 
-    questoes = carregar_questoes()
-    rng = random.Random(args.seed)
-    escolhidas = sorted(rng.sample(questoes, args.n), key=lambda q: q.id)
+    questoes = {q.id: q for q in carregar_questoes()}
 
-    # preserva rótulos já existentes
+    # lê o que já existe (preserva rótulos e linhas)
     existentes: dict[str, str] = {}
     if SAIDA.exists():
         with SAIDA.open(encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 existentes[row["id"]] = row.get("tema_ouro", "")
 
+    # amostra NOVAS do complemento (nunca repete as já presentes)
+    resto = sorted(set(questoes) - set(existentes))
+    rng = random.Random(args.seed)
+    novas = rng.sample(resto, min(args.add, len(resto)))
+
+    todos = sorted(set(existentes) | set(novas))
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     with SAIDA.open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["id", "tema_ouro", "disciplina_origem", "assunto_origem", "texto"])
-        for q in escolhidas:
+        for qid in todos:
+            q = questoes[qid]
             texto = q.texto_classificacao().replace("\n", " ⏎ ")
-            w.writerow([q.id, existentes.get(q.id, ""), q.disciplina_origem,
+            w.writerow([qid, existentes.get(qid, ""), q.disciplina_origem,
                         q.assunto_origem, texto])
-    print(f"Amostra de {len(escolhidas)} questões (seed={args.seed}) -> {SAIDA}")
-    print("IDs:", " ".join(q.id for q in escolhidas))
+    print(f"Amostra agora com {len(todos)} questões "
+          f"({len(novas)} novas, seed={args.seed}) -> {SAIDA}")
 
 
 if __name__ == "__main__":

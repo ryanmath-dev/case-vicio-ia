@@ -19,6 +19,7 @@
 - **Precisão (publicadas):** fração das publicadas corretas pela régua (tema exato
   ou pai/filho). Estimada (sem gabarito) via amostra-ouro + concordância.
 - **Cobertura:** fração das 359 publicadas.
-- **Proxy de concordância:** % de questões em que ≥2 das 3 famílias caem no mesmo
-  ramo (pai/filho).
+- **Proxy de concordância:** fração de pares de famílias cujos nós caem no mesmo
+  ramo (pai/filho). Na submissão (2 famílias) é simplesmente se as duas concordam
+  por ramo.
 - Intervalos: Wilson (proporção) ou bootstrap.

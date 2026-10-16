@@ -15,7 +15,8 @@
 - Estágio 1 — recuperação de candidatos: **embeddings** reduzem 377 temas a top-k
   (aqui, com 359 q., não foi preciso — a árvore inteira cabe no prompt; em 50k/sem
   vira necessário por custo/latência). [registrar como decisão de escala]
-- Estágio 2 — classificação barata por LLM (cheap-by-default: Haiku 5.5 / Luna).
+- Estágio 2 — classificação barata por LLM (cheap-by-default: Haiku 5.5 /
+  gpt-4.1-mini / Gemini Flash).
 - Estágio 3 — escalonar ~10% incertos a modelo forte / comitê.
 - Estágio 4 — regras publicar/revisar/fora + alavanca do tema-pai.
 - Estágio 5 — fila do professor; reportes de alunos realimentam o conjunto-ouro.

@@ -36,17 +36,19 @@ erra de forma correlacionada consigo mesmo. Projetei para **Claude + GPT + Gemin
 real; quando divergem, é sinal de revisão. (Na prática o Gemini saiu por limite de
 cota — ver adiante; rodou com Claude + GPT.) Saída estruturada em JSON (tema,
 confiança, extras, fora). Temperatura 0 onde o provedor aceita; **a
-reprodutibilidade vem do cache da resposta crua** (o Claude Opus/5.5 rejeita
+reprodutibilidade vem do cache da resposta crua** (os modelos Claude 5.x rejeitam
 `temperature`, então a determinação não pode vir do sampling).
 
 **Quarto: o juiz aplica a régua, não os modelos.** O julgamento final é código
-(`src/juiz.py`): combina os 3 votos e
-- se todos apontam o mesmo nó → publica nele;
+(`src/juiz.py`): combina os votos das famílias (2 na submissão; o juiz também
+trata 3) e
+- se todos apontam o **mesmo nó** → publica nele, **desde que** ≥2 famílias e
+  nenhuma com confiança < 0,85 (o gate do acordo exato — ver adiante);
 - se divergem entre **subtemas do mesmo tema** (irmãos) → **publica no tema-pai**
   (a alavanca);
-- se 2/3 concordam no tema → publica no tema-pai;
+- se 2/3 concordam no tema (quando há 3 famílias) → publica no tema-pai;
 - se divergem entre temas/disciplinas → **revisar**;
-- se ≥2 dizem fora → **fora**.
+- se a maioria diz fora → **fora**.
 Com proteções: nunca publica em disciplina (nível 0, genérico demais) e exige
 confiança maior em lixeiras introdutórias de volume suspeito.
 
@@ -58,10 +60,11 @@ alternativas: **0 duplicatas reais**. Lição: nunca deduplicar questão por pre
 do enunciado.
 
 **Quinto: estimar a própria precisão sem gabarito.** Rotulei à mão uma
-**amostra-ouro de 50 questões** (seed fixa 42), **antes de o comitê rodar** — para
-a medição não se ancorar nas saídas dos modelos. A precisão prevista combina
-(a) acerto medido nessa amostra pela régua pai/filho, (b) concordância do comitê
-como proxy, e (c) intervalo de Wilson.
+**amostra-ouro** (50 questões antes de o comitê rodar, para não me ancorar nas
+saídas; depois ampliada para **100**, rotulando as novas só pelo enunciado, sem
+ver os votos dos modelos). A precisão prevista combina (a) acerto medido nessa
+amostra pela régua pai/filho, (b) concordância do comitê como proxy, e (c)
+intervalo de Wilson.
 
 **O achado mais instrutivo — a calibração revelou ONDE está o erro.** O comitê
 rodou com **2 famílias (Claude `haiku-5-5` + GPT `gpt-4.1-mini`)**. A 1ª versão,
